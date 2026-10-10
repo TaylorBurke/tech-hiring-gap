@@ -281,6 +281,67 @@
     table(host, { series: spec.panels.flatMap((p) => p.series), label: spec.label });
   }
 
+  /* ---------- strip plot: every item as a dot on one axis, a few highlighted ---------- */
+  function strip(host, spec) {
+    const { wrap, svg, tip } = mount(host, { label: spec.label });
+    svg.removeAttribute("tabindex");
+    const W = Math.max(320, host.clientWidth), narrow = W < 560;
+    const hl = spec.highlight;                                   // [{name, label}]
+    const order = hl.map((q) => spec.items.find((i) => i.name === q.name)).sort((a, b) => b.v - a.v);
+    const m = { t: 14 + order.length * 18, r: 22, b: 50, l: 22 };
+    const r = narrow ? 3.6 : 5, step = 2 * r + 1, h = 8 * step + 6, H = m.t + h + m.b;
+    const w = W - m.l - m.r;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("width", W); svg.setAttribute("height", H);
+    const g = d3.select(svg).append("g").attr("transform", `translate(${m.l},${m.t})`);
+    const x = d3.scaleLinear().domain(spec.domain).range([0, w]);
+    d3.range(spec.domain[0], spec.domain[1] + 1).forEach((t) => {
+      g.append("line").attr("x1", x(t)).attr("x2", x(t)).attr("y1", 0).attr("y2", h).attr("class", "grid");
+      g.append("text").attr("x", x(t)).attr("y", h + 18).attr("class", "tick").attr("text-anchor", "middle").text(t + "%");
+    });
+    g.append("line").attr("x1", 0).attr("x2", w).attr("y1", h).attr("y2", h).attr("class", "axis-line");
+    g.append("line").attr("x1", x(spec.median)).attr("x2", x(spec.median)).attr("y1", 0).attr("y2", h + 4).attr("class", "ref");
+    g.append("text").attr("x", x(spec.median)).attr("y", h + 36).attr("class", "event-label").attr("text-anchor", "middle").text(`Median major ${spec.median.toFixed(1)}%`);
+    const bins = {}, dots = [];
+    spec.items.slice().sort((a, b) => a.v - b.v).forEach((it) => {
+      const b = Math.round(it.v / 0.25), k = (bins[b] = (bins[b] || 0) + 1) - 1;
+      dots.push({ it, cx: x(it.v), cy: h - r - 2 - k * step, hi: hl.some((q) => q.name === it.name) });
+    });
+    const hover = (e, d) => {
+      const r0 = wrap.getBoundingClientRect();
+      tooltip(tip, wrap, e.clientX - r0.left, e.clientY - r0.top, d.it.name,
+        [{ value: d.it.v.toFixed(1) + "% unemployed", name: "", color: d.hi ? "--s1" : "--context" }, { value: d.it.u.toFixed(0) + "% underemployed", name: "" }]);
+    };
+    g.selectAll("circle.d").data(dots.filter((d) => !d.hi)).join("circle").attr("class", "d").attr("cx", (d) => d.cx).attr("cy", (d) => d.cy).attr("r", r)
+      .attr("fill", css("--context")).attr("fill-opacity", 0.85).attr("stroke", css("--surface")).attr("stroke-width", 2);
+    g.selectAll("circle.h").data(dots.filter((d) => d.hi)).join("circle").attr("class", "h").attr("cx", (d) => d.cx).attr("cy", (d) => d.cy).attr("r", r + 1.5)
+      .attr("fill", css("--s1")).attr("stroke", css("--surface")).attr("stroke-width", 2);
+    order.forEach((it, i) => {
+      const d = dots.find((q) => q.it === it), ly = -8 - (order.length - 1 - i) * 18;
+      g.append("line").attr("x1", d.cx).attr("x2", d.cx).attr("y1", ly + 3).attr("y2", d.cy - r - 3).attr("class", "event");
+      const q = hl.find((z) => z.name === it.name);
+      const t = g.append("text").attr("x", d.cx - 5).attr("y", ly).attr("class", "end-label").attr("text-anchor", "end");
+      t.append("tspan").text(narrow ? q.short : q.label);
+      t.append("tspan").attr("dx", 5).attr("class", "end-value").text(it.v.toFixed(1) + "%");
+    });
+    g.selectAll("circle.hit").data(dots).join("circle").attr("class", "hit").attr("cx", (d) => d.cx).attr("cy", (d) => d.cy).attr("r", 12).attr("fill", "transparent")
+      .on("pointermove pointerenter", hover).on("pointerleave", () => { tip.hidden = true; });
+    // table twin: all items, highest first
+    const det = document.createElement("details");
+    det.className = "table-view";
+    det.innerHTML = "<summary>Table view</summary>";
+    const sc = document.createElement("div"); sc.className = "table-scroll";
+    const t = document.createElement("table");
+    const hr = t.createTHead().insertRow();
+    ["Major", "Unemployed (%)", "Underemployed (%)"].forEach((c) => { const th = document.createElement("th"); th.textContent = c; hr.appendChild(th); });
+    const tb = t.createTBody();
+    spec.items.slice().sort((a, b) => b.v - a.v).forEach((it) => {
+      const tr = tb.insertRow();
+      tr.insertCell().textContent = it.name;
+      [it.v, it.u].forEach((v) => { const td = tr.insertCell(); td.textContent = v.toFixed(1); td.className = "num"; });
+    });
+    sc.appendChild(t); det.appendChild(sc); host.appendChild(det);
+  }
+
   /* ---------- table view (the accessible twin) ---------- */
   function table(host, spec) {
     if (spec.noTable) return;
@@ -311,5 +372,5 @@
     host.appendChild(det);
   }
 
-  window.Charts = { line, columns, panels, fmtNum, fmtMonth };
+  window.Charts = { line, columns, panels, strip, fmtNum, fmtMonth };
 })();

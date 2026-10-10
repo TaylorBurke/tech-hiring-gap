@@ -145,3 +145,60 @@ out = ROOT / "data" / "derived"
 out.mkdir(exist_ok=True)
 (out / "story.json").write_text(json.dumps(story, indent=1))
 print(json.dumps(story["facts"], indent=1))
+
+# ---------------- chapter 5: entry-level and the people the headline rate leaves out ----------------
+def nyfed(name, col):
+    out = {}
+    for r in csv.DictReader((RAW / "nyfed_college" / name).open()):
+        m, _, y = r["Date"].split("/")
+        out[f"{int(y):04d}-{int(m):02d}"] = float(r[col])
+    return out
+
+ny_recent = nyfed("college-labor-unemployment-data.csv", "Recent graduates")
+ny_all = nyfed("college-labor-unemployment-data.csv", "All workers")
+ny_young = nyfed("college-labor-unemployment-data.csv", "Young workers")
+ny_under = nyfed("college-labor-underemployment-data.csv", "Recent graduates")
+ny_under_all = nyfed("college-labor-underemployment-data.csv", "College graduates")
+u3, u6 = fred("UNRATE"), fred("U6RATE")
+want = fred("NILFWJN")
+marg, disc = fred("LNU05026642"), fred("LNU05026645")
+lfpr, epop = fred("LNS11300060"), fred("LNS12300060")
+majors = [{"name": r["Major"], "unemp": float(r["Unemployment Rate"]), "under": float(r["Underemployment Rate"])}
+          for r in csv.DictReader((RAW / "nyfed_college" / "college-labor-outcomes-by-major-data.csv").open())]
+rank = sorted(majors, key=lambda m: -m["unemp"])
+fred_end = max(u3)
+ny_end = max(ny_recent)
+def ym_back(ym, n):
+    y, m = int(ym[:4]), int(ym[5:])
+    t = y * 12 + (m - 1) - n
+    return f"{t // 12:04d}-{t % 12 + 1:02d}"
+f12, n12 = ym_back(fred_end, 11), ym_back(ny_end, 11)
+
+story["series"].update({
+    "ny_recent": {"sources": ["nyfed_college"], "unit": "percent unemployed", "monthly": pts(ny_recent, "2019-01")},
+    "ny_all": {"sources": ["nyfed_college"], "unit": "percent unemployed", "monthly": pts(ny_all, "2019-01")},
+    "u3": {"sources": ["fred"], "unit": "percent", "monthly": pts(u3, "2019-01")},
+    "u6": {"sources": ["fred"], "unit": "percent", "monthly": pts(u6, "2019-01")},
+    "want_job_12m": {"sources": ["fred"], "unit": "thousands, 12-month average", "monthly": pts(rolling(want, 12), "2019-12")},
+})
+story["majors"] = {"sources": ["nyfed_college"], "year": 2024, "list": majors}
+story["facts"].update({
+    "ny_end": ny_end, "fred_end": fred_end, "f12_start": f12, "n12_start": n12,
+    "recent_2019": round(avg(ny_recent, "2019-01", "2019-12"), 1), "recent_l12": round(avg(ny_recent, n12, ny_end), 1),
+    "nyall_2019": round(avg(ny_all, "2019-01", "2019-12"), 1), "nyall_l12": round(avg(ny_all, n12, ny_end), 1),
+    "under_2019": round(avg(ny_under, "2019-01", "2019-12")), "under_l12": round(avg(ny_under, n12, ny_end)),
+    "u3_2019": round(avg(u3, "2019-01", "2019-12"), 1), "u3_l12": round(avg(u3, f12, fred_end), 1),
+    "u6_2019": round(avg(u6, "2019-01", "2019-12"), 1), "u6_l12": round(avg(u6, f12, fred_end), 1),
+    "want_2019": round(avg(want, "2019-01", "2019-12")), "want_l12": round(avg(want, f12, fred_end)),
+    "marg_2019": round(avg(marg, "2019-01", "2019-12")), "marg_l12": round(avg(marg, f12, fred_end)),
+    "disc_2019": round(avg(disc, "2019-01", "2019-12")), "disc_l12": round(avg(disc, f12, fred_end)),
+    "lfpr_2019": round(avg(lfpr, "2019-01", "2019-12"), 1), "lfpr_l12": round(avg(lfpr, f12, fred_end), 1),
+    "epop_2019": round(avg(epop, "2019-01", "2019-12"), 1), "epop_l12": round(avg(epop, f12, fred_end), 1),
+    "cs_unemp": next(m["unemp"] for m in majors if m["name"] == "Computer Science"),
+    "cs_under": next(m["under"] for m in majors if m["name"] == "Computer Science"),
+    "cs_rank": 1 + [m["name"] for m in rank].index("Computer Science"),
+    "ce_rank": 1 + [m["name"] for m in rank].index("Computer Engineering"),
+    "major_n": len(majors), "major_median": round(statistics.median(m["unemp"] for m in majors), 1),
+})
+(out / "story.json").write_text(json.dumps(story, indent=1))
+print({k: v for k, v in story["facts"].items() if k.startswith(("recent", "nyall", "u3", "u6", "want", "marg", "disc", "lfpr", "epop", "cs_", "ce_", "major", "under"))})

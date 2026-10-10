@@ -62,6 +62,39 @@
       });
     },
 
+    /* Chapter 5 */
+    "fig-grads": () => Charts.line(document.getElementById("fig-grads"), {
+      label: "Line chart of unemployment rates: recent college graduates versus all workers, 2019 to 2026",
+      series: [
+        { name: "Recent graduates (22-27)", color: "--s1", data: d("ny_recent") },
+        { name: "All workers", color: "--context", data: d("ny_all") },
+      ],
+      xDomain: ["2019-01", "2026-10"], endLabels: true, height: 300, yMin: 0, valueFormat: (v) => v.toFixed(1) + "%", yFormat: (v) => v + "%",
+      events: [{ at: "2025-10", text: "Oct 2025 estimated", side: "left", row: 0 }],
+    }),
+    "fig-majors": () => Charts.strip(document.getElementById("fig-majors"), {
+      label: "Strip plot of unemployment rates for recent graduates in 74 college majors, with computer majors highlighted",
+      items: window.STORY.majors.list.map((m) => ({ name: m.name, v: m.unemp, u: m.under })),
+      domain: [0, 9], median: window.STORY.facts.major_median,
+      highlight: [
+        { name: "Computer Engineering", label: "Computer engineering", short: "Comp. eng." },
+        { name: "Computer Science", label: "Computer science", short: "Comp. sci." },
+        { name: "Information Systems & Management", label: "Information systems", short: "Info. sys." },
+      ],
+    }),
+    "fig-broad": () => Charts.panels(document.getElementById("fig-broad"), {
+      label: "Two stacked panels: headline and broader unemployment rates, and people outside the labor force who want a job",
+      xDomain: ["2019-01", "2026-10"],
+      events: [],
+      panels: [
+        { title: "Unemployment: headline (U-3) and broader (U-6), percent", height: 170, yMin: 0, valueFormat: (v) => v.toFixed(1) + "%", yFormat: (v) => v + "%",
+          series: [{ name: "U-6 (adds discouraged, marginally attached, part-time for economic reasons)", color: "--s2", data: d("u6") }, { name: "U-3 (headline)", color: "--s1", data: d("u3") }] },
+        { title: "Not in the labor force but want a job now, millions (12-month average)", height: 150, yMin: 0, valueFormat: (v) => (v / 1000).toFixed(1) + " million", yFormat: (v) => (v === 0 ? "0" : v / 1000 + "M"),
+          ref: { value: window.STORY.facts.want_2019, label: "2019 average: " + (window.STORY.facts.want_2019 / 1000).toFixed(1) + " million", at: "2023-03", below: true },
+          series: [{ name: "Want a job, not in labor force", color: "--s1", data: d("want_job_12m") }] },
+      ],
+    }),
+
     /* Chapter 4 */
     "fig-gap-levels": () => Charts.line(document.getElementById("fig-gap-levels"), {
       label: "Line chart of information-sector job openings and hires, thousands per month, 3-month average",

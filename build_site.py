@@ -111,6 +111,28 @@ ch4 = (
 <p class="caveat"><strong>A few quiet months are not a trend.</strong> The ratio swings a lot: it was near {r_info['2025-09']:.1f} as recently as September 2025. And August 2026 shows 123,000 openings against 44,000 hires, which lifts the 3-month ratio to {r_info['2026-08']:.1f}. JOLTS industry estimates carry wide margins of error and the newest month is preliminary, so we are not reading that jump as a trend either; it will be revised. Also, "information" is only a rough stand-in for tech, because it includes telecom and media.</p></div>""",
 )
 
+gap19 = F["recent_2019"] - F["nyall_2019"]
+gapl12 = F["recent_l12"] - F["nyall_l12"]
+pc = lambda a, b_: round((b_ / a - 1) * 100)
+ch5 = (
+    f"""<p class="lede">The market is not equally hard on everyone. The sharpest strain is at the entry point. Over the 12 months to {mo(F['ny_end'])}, recent college graduates (ages 22 to 27) were unemployed at an average {F['recent_l12']}%, up from {F['recent_2019']}% in 2019. For all workers the rate rose from {F['nyall_2019']}% to {F['nyall_l12']}%. The gap between graduates and everyone else widened from {gap19:.1f} to {gapl12:.1f} percentage points.</p>
+<p>The share of graduates in jobs that typically do not require a degree stayed near {F['under_l12']}% ({F['under_2019']}% in 2019). So the squeeze shows up as unemployment, not as a rise in underemployment.</p>""",
+    kpis(tile("Recent graduates unemployed", f"{F['recent_l12']}%", f"12 months to {mo(F['ny_end'])} · 2019: {F['recent_2019']}%"),
+         tile("All workers unemployed", f"{F['nyall_l12']}%", f"12 months to {mo(F['ny_end'])} · 2019: {F['nyall_2019']}%"),
+         tile("Computer science majors", f"{F['cs_unemp']:.1f}%", f"{F['cs_rank']}th highest of {F['major_n']} majors · 2024"))
+    + figure("fig-grads")
+    + f"""<div class="prose"><p>Computer majors sit near the top of the list. In 2024 data from the American Community Survey, recent computer science graduates were unemployed at {F['cs_unemp']:.1f}%, the {F['cs_rank']}th highest of {F['major_n']} majors. Computer engineering ranked {F['ce_rank']}nd. The median major was {F['major_median']}%. Underemployment among computer science graduates, though, was low ({F['cs_under']:.0f}%, against about {F['under_l12']}% for all recent graduates), which suggests those who find work mostly find degree-level jobs.</p></div>"""
+    + figure("fig-majors")
+    + f"""<div class="prose"><p class="caveat"><strong>Read the rankings loosely.</strong> The by-major figures cover a single year (2024) from a survey, and samples for individual majors are smaller, so neighboring majors are not precisely ranked. The unemployment series is smoothed over three months and excludes students, and October 2025 is estimated because data were missing.</p>
+<p>Now the people the headline rate leaves out. The unemployment rate counts only people actively looking for work. Comparing 2019 averages with the 12 months to {mo(F['fred_end'])}, the headline rate (U-3) rose from {F['u3_2019']}% to {F['u3_l12']}%, and the broader U-6 measure, which adds discouraged workers, other marginally attached workers and people stuck in part-time jobs, rose from {F['u6_2019']}% to {F['u6_l12']}%. The number of people outside the labor force who say they want a job rose {pc(F['want_2019'], F['want_l12'])}%, from {F['want_2019'] / 1000:.1f} million to {F['want_l12'] / 1000:.1f} million. Within that, marginally attached workers rose from {F['marg_2019']:,},000 to {F['marg_l12']:,},000 and discouraged workers from {F['disc_2019']:,},000 to {F['disc_l12']:,},000.</p></div>"""
+    + kpis(tile("Want a job, not in labor force", f"{F['want_l12'] / 1000:.1f} million", f"12-month average · 2019: {F['want_2019'] / 1000:.1f} million"),
+           tile("Headline unemployment (U-3)", f"{F['u3_l12']}%", f"12-month average · 2019: {F['u3_2019']}%"),
+           tile("Broader unemployment (U-6)", f"{F['u6_l12']}%", f"12-month average · 2019: {F['u6_2019']}%"))
+    + figure("fig-broad")
+    + f"""<div class="prose"><p>The group outside the count grew by about {pc(F['want_2019'], F['want_l12'])}%, close to the {pc(F['u3_2019'], F['u3_l12'])}% rise in the headline rate. So by these measures the hidden group has grown about as fast as the visible one, not faster. And for people in the middle of their working lives, work is not scarcer than before the pandemic: participation among workers aged 25 to 54 averaged {F['lfpr_l12']}% over the last 12 months against {F['lfpr_2019']}% in 2019, and their employment rate was {F['epop_l12']}% against {F['epop_2019']}%. The weakness is concentrated among people trying to enter, and in particular fields, more than across the whole labor force.</p>
+<p class="caveat"><strong>What these measures cannot show.</strong> People outside the labor force may want a job for reasons unrelated to the market, and the series that counts them is not seasonally adjusted, so we compare full-year averages. An aging population also lowers overall participation, which is why we use the prime-age (25 to 54) figures. None of this says why any individual stopped looking.</p></div>""",
+)
+
 page = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tech Hiring Gap</title>
@@ -123,16 +145,17 @@ page = f"""<!doctype html>
 <h1>Boom, bust, and a market that never reopened</h1>
 <p class="dek">Tech hiring surged, stalled, and thinned out. What the numbers show, what they cannot show, and where we are guessing.</p>
 </header>
-<nav class="nav"><a href="#ch1">1 The boom</a><a href="#ch2">2 The turn</a><a href="#ch3">3 The cuts</a><a href="#ch4">4 The gap that narrowed</a><a href="sources.html">Sources</a></nav>
+<nav class="nav"><a href="#ch1">1 The boom</a><a href="#ch2">2 The turn</a><a href="#ch3">3 The cuts</a><a href="#ch4">4 The gap that narrowed</a><a href="#ch5">5 Who is shut out</a><a href="sources.html">Sources</a></nav>
 {chapter(1, ch1)}
 {chapter(2, ch2)}
 {chapter(3, ch3)}
 {chapter(4, ch4)}
-<div class="next prose"><strong>Still to come.</strong> Chapter 5 looks at who is shut out: recent graduates, young workers, and the people the unemployment rate stops counting. Chapter 6 maps the causes and feedback loops. This draft stops after chapter 4.</div>
+{chapter(5, ch5)}
+<div class="next prose"><strong>Still to come.</strong> Chapter 6 maps the causes and feedback loops. This draft stops after chapter 5.</div>
 <footer>Every figure links to its sources; <a href="sources.html">the sources page</a> lists what each one measures, when it was retrieved, and where it falls short.</footer>
 </div>
 <script src="assets/vendor/d3.min.js"></script>
-<script>window.STORY = {json.dumps({'series': S, 'facts': F, 'latest_info_month': story['latest_info_month']})};</script>
+<script>window.STORY = {json.dumps({'series': S, 'facts': F, 'majors': story['majors'], 'latest_info_month': story['latest_info_month']})};</script>
 <script src="assets/charts.js"></script>
 <script src="assets/story.js"></script>
 </body></html>"""

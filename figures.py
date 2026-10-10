@@ -15,6 +15,12 @@ FIGURES = {
         "sub": "Information sector, thousands per month, 3-month average. Hollow point = preliminary", "sources": ["bls_jolts"]},
     "fig-gap-ratio": {"chapter": 4, "title": "Openings per hire peaked in 2022 and fell to a multi-year low in 2026",
         "sub": "Job openings divided by hires, 3-month average. Hollow point = preliminary", "sources": ["bls_jolts", "fred"]},
+    "fig-grads": {"chapter": 5, "title": "Recent graduates are unemployed at a higher rate, and the gap has widened",
+        "sub": "Unemployment rate, seasonally adjusted, 3-month average. Graduates ages 22-27 with a bachelor's degree or higher, excluding students", "sources": ["nyfed_college"]},
+    "fig-majors": {"chapter": 5, "title": "Computer majors rank near the top for recent-graduate unemployment",
+        "sub": "Unemployment rate of recent graduates in each of 74 majors, 2024. One dot per major", "sources": ["nyfed_college"]},
+    "fig-broad": {"chapter": 5, "title": "The headline rate leaves out a group that has grown",
+        "sub": "Broader unemployment measures and people who want a job but are not looking, 2019 to 2026", "sources": ["fred"]},
 }
 
-CHAPTERS = {1: "The boom", 2: "The turn", 3: "The cuts", 4: "The gap that narrowed"}
+CHAPTERS = {1: "The boom", 2: "The turn", 3: "The cuts", 4: "The gap that narrowed", 5: "Who is shut out"}
