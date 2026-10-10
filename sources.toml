@@ -39,18 +39,8 @@ publisher = "Challenger, Gray & Christmas, Inc."
 url = "https://www.challengergray.com/blog/category/job-cuts-report/"
 license = "Copyrighted press releases; cite and link, do not redistribute"
 measures = "Announced job cuts by industry and stated reason, including cuts attributed to AI"
-caveat = "Announcements, not confirmed separations. Reasons are as stated by the employer."
-access = "manual"
-redistribute = false
-
-[layoffs_fyi]
-name = "Layoffs.fyi"
-publisher = "Layoffs.fyi"
-url = "https://layoffs.fyi/"
-license = "Terms to be confirmed; cite and link, do not redistribute"
-measures = "Tech company layoffs tracked from public reports"
-caveat = "A floor, not a total. Depends on media and company reports; small and remote cuts are missed."
-access = "cite-only"
+caveat = "Announcements, not confirmed separations; reasons are as stated by the employer. AI has been tracked as its own reason only since May 2023, and 2024-25 reports often fold it into \"Technological Updates\", so AI counts are not comparable across years. Monthly tech-sector and AI figures are present only where the report text states them."
+access = "rss"
 redistribute = false
 
 [warn_states]

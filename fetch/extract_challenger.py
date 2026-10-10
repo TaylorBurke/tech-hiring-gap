@@ -15,7 +15,9 @@ NUM = r"(\d{1,3}(?:,\d{3})+|\d{3,})"
 
 TOTAL = re.compile(rf"[^.]*?-based (?:employers|companies) announced {NUM} (?:job )?cuts in ({MRE})[^.]*\.")
 AI = re.compile(rf"[^.]*(?:Artificial Intelligence|\bAI\b)[^.]*?(?:cited for|led all reasons for job cuts, with|with) {NUM}[^.]*? (?:job )?cuts? in ({MRE})[^.]*\.|[^.]*In ({MRE}), Artificial Intelligence[^.]*?(?:with|for) {NUM}[^.]*\.")
-TECH = re.compile(rf"[^.]*Technology[^.]*?(?:announced|led)[^.]*?{NUM} (?:job )?cuts in ({MRE})[^.]*\.")
+TECH = re.compile(rf"[^.]*Tech(?:nology)?\b[^.]*?(?:announced|led|cut)[^.]*?(?:{NUM} (?:job )?cuts in ({MRE})|in ({MRE}) with {NUM})[^.]*\.")
+TECH_OF = re.compile(rf"[^.]*Technology[^.]*?{NUM}, {NUM} of which (?:were announced|occurred) in ({MRE})[^.]*\.")
+TECH_LATE = re.compile(rf"[^.]*Technology[^.]*?{NUM} (?:job )?cuts in ({MRE})[^.]*\.")
 
 def month_year(name, post_date):
     """Report month name -> (year, month); January releases cover December, so roll back if needed."""
@@ -38,9 +40,17 @@ for p in posts():
         g = a.groups(); num = g[0] or g[3]; mon = g[1] or g[2]
         if month_year(mon, p["date"]) == key:
             r["ai_cuts"], r["ai_quote"] = num.replace(",", ""), a.group(0).strip()[:300]
-    k = TECH.search(t)
-    if k and month_year(k.group(2), p["date"]) == key:
-        r["tech_cuts"], r["tech_quote"] = k.group(1).replace(",", ""), k.group(0).strip()[:300]
+    for pat, num_i, mon_i in ((TECH_OF, 2, 3), (TECH, None, None), (TECH_LATE, 1, 2)):
+        k = pat.search(t)
+        if not k:
+            continue
+        if pat is TECH:
+            g = k.groups(); num = g[0] or g[3]; mon = g[1] or g[2]
+        else:
+            num, mon = k.group(num_i), k.group(mon_i)
+        if month_year(mon, p["date"]) == key:
+            r["tech_cuts"], r["tech_quote"] = num.replace(",", ""), k.group(0).strip()[:300]
+            break
 
 FIELDS = ["year","month","total_cuts","tech_cuts","ai_cuts","report_date","report_url","total_quote","tech_quote","ai_quote"]
 out = ROOT / "data" / "challenger_monthly.csv"
