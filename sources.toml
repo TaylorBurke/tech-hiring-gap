@@ -1,0 +1,64 @@
+# Source registry: the single place every data source is declared.
+# Each fetch script writes data tagged with one of these ids, each chart
+# cites ids, and build_sources.py renders the public sources page from this file.
+# Fields: name, publisher, url, license, measures, caveat, access ("api" | "csv" | "scrape" | "manual" | "cite-only"), redistribute (bool)
+
+[fred]
+name = "FRED economic data"
+publisher = "Federal Reserve Bank of St. Louis (series originate at BLS, BEA, Board of Governors)"
+url = "https://fred.stlouisfed.org/"
+license = "Public data; each series keeps its original publisher's terms"
+measures = "Fed funds rate, U-6 underemployment, information-sector employment, JOLTS aggregates"
+caveat = "Series are revised; we record the fetch date for every pull."
+access = "csv"
+redistribute = true
+
+[bls_jolts]
+name = "Job Openings and Labor Turnover Survey (JOLTS)"
+publisher = "U.S. Bureau of Labor Statistics"
+url = "https://www.bls.gov/jlt/"
+license = "Public domain (U.S. government work)"
+measures = "Openings, hires, layoffs and quits by industry, including information"
+caveat = "Openings count postings, not hiring intent. Latest month is preliminary. Industry detail has wider error margins."
+access = "api"
+redistribute = true
+
+[indeed_hl]
+name = "Indeed Hiring Lab job postings tracker"
+publisher = "Indeed Hiring Lab"
+url = "https://github.com/hiring-lab/job_postings_tracker"
+license = "CC BY 4.0 (confirmed in the repo README; attribution required)"
+measures = "Daily index of postings on Indeed by occupation, indexed to 1 Feb 2020 = 100"
+caveat = "An index relative to February 2020, not a count of jobs. Covers postings on Indeed only."
+access = "csv"
+redistribute = true
+
+[challenger]
+name = "Challenger, Gray & Christmas job cuts reports"
+publisher = "Challenger, Gray & Christmas, Inc."
+url = "https://www.challengergray.com/blog/category/job-cuts-report/"
+license = "Copyrighted press releases; cite and link, do not redistribute"
+measures = "Announced job cuts by industry and stated reason, including cuts attributed to AI"
+caveat = "Announcements, not confirmed separations. Reasons are as stated by the employer."
+access = "manual"
+redistribute = false
+
+[layoffs_fyi]
+name = "Layoffs.fyi"
+publisher = "Layoffs.fyi"
+url = "https://layoffs.fyi/"
+license = "Terms to be confirmed; cite and link, do not redistribute"
+measures = "Tech company layoffs tracked from public reports"
+caveat = "A floor, not a total. Depends on media and company reports; small and remote cuts are missed."
+access = "cite-only"
+redistribute = false
+
+[warn_states]
+name = "State WARN Act notices"
+publisher = "State workforce agencies (CA EDD, WA ESD, and others)"
+url = "https://www.dol.gov/agencies/eta/layoffs/warn"
+license = "Public records"
+measures = "Mass-layoff and closure notices filed under the federal WARN Act"
+caveat = "Only large events at covered employers; formats differ by state; not all states published. Partial by design."
+access = "scrape"
+redistribute = true
