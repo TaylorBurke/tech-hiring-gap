@@ -42,3 +42,14 @@ measures = "Announced job cuts by industry and stated reason, including cuts att
 caveat = "Announcements, not confirmed separations; reasons are as stated by the employer. AI has been tracked as its own reason only since May 2023, and 2024-25 reports often fold it into \"Technological Updates\", so AI counts are not comparable across years. Monthly tech-sector and AI figures are present only where the report text states them."
 access = "rss"
 redistribute = false
+
+[nyfed_college]
+name = "The Labor Market for Recent College Graduates"
+publisher = "Federal Reserve Bank of New York"
+url = "https://www.newyorkfed.org/research/college-labor-market"
+license = "Terms to be confirmed; cite and link"
+measures = "Unemployment and underemployment of recent graduates, and outcomes by college major including computer science"
+caveat = "Recent graduates are ages 22-27 with a bachelor's degree or higher. Outcomes by major are a single recent-years average, not a time series. Small samples for some majors."
+access = "csv"
+redistribute = false
+

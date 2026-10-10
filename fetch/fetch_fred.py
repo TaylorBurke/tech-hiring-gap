@@ -12,6 +12,17 @@ SERIES = {
     "JTSLDL": "JOLTS total nonfarm layoffs and discharges",
     "EMRATIO": "Employment-population ratio, 16+",
     "LNS12300060": "Employment-population ratio, prime age 25-54",
+    "LNS11300060": "Labor force participation, prime age 25-54",
+    "PAYEMS": "Total nonfarm employment",
+    "CES6054150001": "Computer systems design and related services employment",
+    "CES5051800001": "Computing infrastructure, data processing, web hosting employment",
+    "CES6054000001": "Professional, scientific and technical services employment",
+    "LNS14000036": "Unemployment rate, ages 20-24",
+    "NILFWJN": "Not in labor force, want a job now",
+    "LNU05026642": "Marginally attached to labor force",
+    "LNU05026645": "Discouraged workers",
+    "LNS12032194": "Part-time for economic reasons",
+    "DGS10": "10-year Treasury yield",
 }
 
 for sid in SERIES:
