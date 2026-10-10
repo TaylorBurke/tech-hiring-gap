@@ -53,3 +53,13 @@ caveat = "Recent graduates are ages 22-27 with a bachelor's degree or higher. Ou
 access = "csv"
 redistribute = false
 
+[sec174]
+name = "Section 174 research-expense rules"
+publisher = "U.S. Internal Revenue Service; summary of the 2025 change by Aprio"
+url = "https://www.irs.gov/pub/irs-drop/n-23-63.pdf"
+license = "IRS notice is public domain; the 2025 change is cited to a law-firm summary (https://www.aprio.com/the-one-big-beautiful-bill-makes-domestic-r-e-expenditures-deductible-again-ins-article-tax)"
+measures = "Dates only: R&D (including software development) costs had to be amortized for tax years beginning after Dec 31, 2021; domestic costs became immediately deductible again for tax years beginning after Dec 31, 2024 (Section 174A)"
+caveat = "Used only to mark dates on timelines. We do not measure its effect on hiring. The 2025 change is cited to a secondary summary; a primary statute citation is still to be added."
+access = "cite-only"
+redistribute = false
+
