@@ -127,6 +127,7 @@
 
   function render() { Object.keys(figs).forEach((k) => { if (document.getElementById(k)) figs[k](); }); }
   render();
+  window.__rerender = render;
   let t;
   let lastW = innerWidth;
   addEventListener("resize", () => { if (innerWidth === lastW) return; lastW = innerWidth; clearTimeout(t); t = setTimeout(render, 150); });

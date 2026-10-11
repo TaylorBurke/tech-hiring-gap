@@ -52,7 +52,7 @@ def kpis(*tiles):
 
 
 def chapter(num, body):
-    return f'<section class="chapter" id="ch{num}"><p class="chap-num">Chapter {num}</p><h2>{e(CHAPTERS[num])}</h2><div class="prose">{body[0]}</div>{body[1]}</section>'
+    return f'<section class="chapter" id="ch{num}"><p class="chap-num"><span>Chapter</span>{num:02d}</p><h2>{e(CHAPTERS[num])}</h2><div class="prose">{body[0]}</div>{body[1]}</section>'
 
 
 # ---- numbers used in the prose ----
@@ -254,14 +254,24 @@ page = f"""<!doctype html>
 <title>Tech Hiring Gap</title>
 <meta name="description" content="Tech postings, layoffs and hiring since 2020, with every number traced to its source.">
 <link rel="icon" href="data:,"><link rel="stylesheet" href="assets/style.css"></head>
-<body>
+<body id="top">
 <div class="wrap">
 <header class="mast">
 <p class="eyebrow">Data story · tech labor market, 2020 to now</p>
 <h1>Boom, bust, and a market that never reopened</h1>
 <p class="dek">Tech hiring surged, stalled, and thinned out. What the numbers show, what they cannot show, and where we are guessing.</p>
+<div class="hero">
+<div class="hero-stats">
+<div><span class="hs-val">{F['indeed_sw_peak']}<i>&rarr;</i>{F['indeed_sw_latest']}</span><span class="hs-lab">Software job postings, Feb 2020 = 100. Peak {mo(F['indeed_sw_peak_month'])}, now {mo(F['indeed_sw_latest_month'])}</span></div>
+<div><span class="hs-val">{F['indeed_all_latest']}</span><span class="hs-lab">All job postings on the same scale, for comparison</span></div>
+<div><span class="hs-val">{F['recent_2019']}%<i>&rarr;</i>{F['recent_l12']}%</span><span class="hs-lab">Unemployment, recent college graduates, 2019 vs last 12 months</span></div>
+</div>
+<div class="hero-spark" id="hero-spark" role="img" aria-label="Sparkline of software job postings, indexed to February 2020, rising to 229 in February 2022 and falling to 77"></div>
+</div>
 </header>
-<nav class="nav"><a href="#ch1">1 The boom</a><a href="#ch2">2 The turn</a><a href="#ch3">3 The cuts</a><a href="#ch4">4 The gap that narrowed</a><a href="#ch5">5 Who is shut out</a><a href="#ch6">6 Why</a><a href="sources.html">Sources</a></nav>
+</div>
+<nav class="nav" id="nav"><div class="nav-in"><a class="nav-home" href="#top">Tech hiring gap</a><span class="nav-links"><a href="#ch1">1 The boom</a><a href="#ch2">2 The turn</a><a href="#ch3">3 The cuts</a><a href="#ch4">4 The gap</a><a href="#ch5">5 Shut out</a><a href="#ch6">6 Why</a><a href="sources.html">Sources</a></span><button id="theme" type="button" aria-label="Toggle light and dark theme">&#9680;</button></div><div class="nav-bar" id="nav-bar"></div></nav>
+<div class="wrap">
 {chapter(1, ch1)}
 {chapter(2, ch2)}
 {chapter(3, ch3)}
@@ -273,6 +283,7 @@ page = f"""<!doctype html>
 <script src="assets/vendor/d3.min.js"></script>
 <script>window.STORY = {json.dumps({'series': S, 'facts': F, 'majors': story['majors'], 'latest_info_month': story['latest_info_month']})};</script>
 <script src="assets/charts.js"></script>
+<script src="assets/ui.js"></script>
 <script src="assets/story.js"></script>
 </body></html>"""
 (ROOT / "site" / "index.html").write_text(page)
