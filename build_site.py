@@ -133,6 +133,122 @@ ch5 = (
 <p class="caveat"><strong>What these measures cannot show.</strong> People outside the labor force may want a job for reasons unrelated to the market, and the series that counts them is not seasonally adjusted, so we compare full-year averages. An aging population also lowers overall participation, which is why we use the prime-age (25 to 54) figures. None of this says why any individual stopped looking.</p></div>""",
 )
 
+# ---------------- chapter 6 ----------------
+def loop_diagram():
+    W_, GAP = 172, 15
+
+    def node(cx, cy, lines, sub, kind):
+        subs = sub if isinstance(sub, list) else [sub]
+        n = len(lines) + len(subs)
+        h = max(52, 20 + GAP * n)
+        top = cy - h / 2
+        t = []
+        y0 = cy - (n - 1) * GAP / 2 + 4
+        for i, ln in enumerate(lines):
+            t.append(f'<text class="nt" x="{cx}" y="{y0 + i * GAP:.1f}" text-anchor="middle">{e(ln)}</text>')
+        for j, sl in enumerate(subs):
+            t.append(f'<text class="ns" x="{cx}" y="{y0 + (len(lines) + j) * GAP:.1f}" text-anchor="middle">{e(sl)}</text>')
+        return {"cx": cx, "cy": cy, "w": W_, "h": h,
+                "svg": f'<rect class="node {kind}" x="{cx - W_ / 2}" y="{top:.1f}" width="{W_}" height="{h}" rx="10"/>' + "".join(t)}
+
+    def edge(d):
+        return f'<path class="edge" d="{d}" marker-end="url(#ar)"/>'
+
+    def loop(cx, nodes, labels, title, edges_in):
+        N = node(cx, 140, *nodes[0]); E = node(cx + 122, 268, *nodes[1]); S = node(cx, 404, *nodes[2]); Wn = node(cx - 122, 268, *nodes[3])
+        hw = W_ / 2
+        paths = [
+            f"M{N['cx'] + hw},{N['cy']} C{E['cx']},{N['cy']} {E['cx']},{E['cy'] - E['h'] / 2 - 45} {E['cx']},{E['cy'] - E['h'] / 2 - 2}",
+            f"M{E['cx']},{E['cy'] + E['h'] / 2} C{E['cx']},{S['cy'] - 40} {S['cx'] + hw + 45},{S['cy']} {S['cx'] + hw + 2},{S['cy']}",
+            f"M{S['cx'] - hw},{S['cy']} C{Wn['cx'] + 40},{S['cy']} {Wn['cx']},{S['cy'] - 40} {Wn['cx']},{Wn['cy'] + Wn['h'] / 2 + 2}",
+            f"M{Wn['cx']},{Wn['cy'] - Wn['h'] / 2} C{Wn['cx']},{N['cy'] + 40} {N['cx'] - hw - 45},{N['cy']} {N['cx'] - hw - 2},{N['cy']}",
+        ]
+        out = "".join(edge(p) for p in paths) + N["svg"] + E["svg"] + S["svg"] + Wn["svg"]
+        (l1, l2, l3, l4) = labels
+        out += (f'<text class="el" x="{cx + 100}" y="196" text-anchor="end">{e(l1)}</text>'
+                f'<text class="el" x="{cx + 100}" y="352" text-anchor="end">{e(l2)}</text>'
+                f'<text class="el" x="{cx - 100}" y="352" text-anchor="start">{e(l3)}</text>'
+                f'<text class="el" x="{cx - 100}" y="196" text-anchor="start">{e(l4)}</text>')
+        out += f'<circle class="rr" cx="{cx}" cy="268" r="14"/><text class="rl" x="{cx}" y="272.5">R</text>'
+        out += f'<text class="lt" x="{cx}" y="462" text-anchor="middle">{e(title)}</text>'
+        return out, N["cy"] - N["h"] / 2
+
+    pct_ = lambda a, b_: round((1 - b_ / a) * 100)
+    left, ltop = loop(214, [
+        (["Fewer people quit"], f"quits {F['quits_2019']}k → {F['quits_l12']}k a month", "meas"),
+        (["Fewer openings"], f"openings {F['openings_2019']}k → {F['openings_l12']}k", "meas"),
+        (["Fewer hires"], f"hires {F['hires_2019']}k → {F['hires_l12_6']}k", "meas"),
+        (["Fewer jobs to", "move to"], "not measured", "infer"),
+    ], ("backfills go unposted", "less left to fill", "fewer offers", "stay put"), "Loop 1: staying put", None)
+    right, rtop = loop(686, [
+        (["Fewer entry-level", "hires"], ["proxy only: grads", f"unemployed {F['recent_2019']}% → {F['recent_l12']}%"], "infer"),
+        (["Less on-the-job", "training"], "not measured", "infer"),
+        (["Thinner mid-level", "bench in 3-5 yrs"], "not measured", "infer"),
+        (["Teams lean on", "seniors + AI"], "not measured", "infer"),
+    ], ("fewer to train", "fewer promoted", "gap filled by", "seem optional"), "Loop 2: the thinning bench", None)
+    shock = ('<rect class="shock" x="320" y="8" width="260" height="40" rx="10"/>'
+             '<text class="nt" x="450" y="33" text-anchor="middle">Hiring freeze + layoffs, 2022 on</text>'
+             f'<path class="edge" d="M320,28 C214,28 214,{ltop - 40:.0f} 214,{ltop - 2:.0f}" marker-end="url(#ar)"/>'
+             f'<path class="edge" d="M580,28 C686,28 686,{rtop - 40:.0f} 686,{rtop - 2:.0f}" marker-end="url(#ar)"/>'
+             '<text class="el" x="231" y="76" text-anchor="start">layoffs make staying put safer</text>'
+             '<text class="el" x="669" y="76" text-anchor="end">a freeze cuts junior hiring first</text>')
+    legend = ('<rect class="node meas" x="20" y="480" width="28" height="14" rx="4"/><text class="leg" x="56" y="491">solid: level measured in chapters 1-5</text>'
+              '<rect class="node infer" x="330" y="480" width="28" height="14" rx="4"/><text class="leg" x="366" y="491">dashed: not measured here</text>'
+              '<path class="edge" d="M600,487 L640,487" marker-end="url(#ar)"/><text class="leg" x="648" y="491">proposed mechanism, not tested as cause</text>'
+              '<circle class="rr" cx="27" cy="512" r="9"/><text class="rl" x="27" y="516" style="font-size:10px">R</text><text class="leg" x="46" y="516">reinforcing loop: each lap strengthens the next</text>')
+    aria = ("Two reinforcing loops. Staying put: fewer people quit, so fewer openings, so fewer hires, so fewer jobs to move to, so people stay put. "
+            "Thinning bench: fewer entry-level hires, less on-the-job training, a thinner mid-level bench in three to five years, teams lean on seniors and AI, so juniors look optional.")
+    return (f'<div class="loops"><p class="hint">Swipe sideways to see loop 2.</p><div class="scroll"><svg viewBox="0 0 900 530" role="img" aria-label="{e(aria)}">'
+            '<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>'
+            + shock + left + right + legend + '</svg></div></div>')
+
+
+def badge(kind):
+    ring = '<circle cx="7" cy="7" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/>'
+    fills = {"ok": '<circle cx="7" cy="7" r="6" fill="currentColor"/>',
+             "timing": ring + '<path d="M7,1 A6,6 0 0 1 7,13 Z" fill="currentColor"/>',
+             "weak": ring + '<path d="M7,7 L7,1 A6,6 0 0 1 13,7 Z" fill="currentColor"/>',
+             "none": ring}
+    label = {"ok": "Consistent", "timing": "Timing only", "weak": "Weak", "none": "Not measured here"}[kind]
+    return f'<span class="badge"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true">{fills[kind]}</svg>{label}</span>'
+
+
+def row(cause, expect, seen, kind):
+    return f"<tr><td>{cause}</td><td>{expect}</td><td>{seen}</td><td>{badge(kind)}</td></tr>"
+
+
+causes = "".join([
+    row("Cheap money and over-hiring, 2020-22", "Postings and hiring surge, then fall back toward normal.",
+        f"Software postings reached {F['indeed_sw_peak']} (Feb 2020 = 100); information-sector hires averaged {F['hires_2022']}k a month in 2022 against {F['hires_2019']}k in 2019. Both fell back.", "ok"),
+    row("Interest-rate rises from March 2022", "Postings fall after rates rise.",
+        f"Postings peaked in February 2022, a month before the first rise (markets may have anticipated it), then kept falling as rates climbed through 2023.", "timing"),
+    row("Section 174 amortization (2022; reversed for 2025 on)", "Software spending cut from 2022; some relief once expensing returned in July 2025.",
+        f"Postings fell from 2022. After July 2025 they rose from {F['sw_2025_07']} to {F['indeed_sw_latest']}, a small move with no firm-level data behind it.", "weak"),
+    row("Margin pressure and investor demands for efficiency", "Cuts at profitable firms; cost-cutting named as a reason.",
+        "Challenger names cost-cutting among stated reasons (for example in October 2025), but we did not tally it.", "none"),
+    row("AI tools", "Entry-level hiring falls first; employers cite AI; headcount falls in exposed roles.",
+        f"AI-cited cuts rose from {n(ai_2025)} (2025) to {n(F['challenger_ai_2026ytd'])} (Jan-Sep 2026), and graduate unemployment is up. But software postings had already fallen from {F['indeed_sw_peak']} to {F['sw_2023_05']} by May 2023, when Challenger first tracked AI as a reason, and computer-systems-design jobs are still {F['emp_csd_latest']:+.1f}% versus January 2020.", "weak"),
+    row("Offshoring, visa policy, tariffs, consolidation, normalization of pandemic-era digital demand", "Varies by candidate.", "No data for these in this project.", "none"),
+])
+
+ch6 = (
+    f"""<p class="lede">Chapters 1 to 5 describe what happened. This one asks why, and says plainly how far the evidence goes. The short version: several plausible causes overlap in time, and the data here cannot rank them.</p>
+<p>The table lists each candidate, what we would expect to see if it were the main driver, and what our data shows. The status column is about our evidence, not about whether a cause is real.</p>""",
+    '<p class="hint prose" style="margin-bottom:-14px">Swipe the table sideways to see every column.</p><div class="table-wrap"><table class="causes"><thead><tr><th>Candidate cause</th><th>If it were the main driver</th><th>What our data shows</th><th>Where it stands</th></tr></thead><tbody>'
+    + causes + '</tbody></table></div>'
+    + '<div class="prose"><p class="src" style="margin-top:-12px">Sources: <a href="sources.html#indeed_hl">Indeed</a>, <a href="sources.html#bls_jolts">JOLTS</a>, <a href="sources.html#fred">FRED</a>, <a href="sources.html#challenger">Challenger</a>, <a href="sources.html#sec174">Section 174 sources</a>.</p>'
+    + f"""<p>Two things the table does support. First, no single-cause story fits: the decline started in early 2022, before AI cuts were being reported, and it overlaps with the end of the boom, the rate rises and the tax change. Second, AI-attributed cuts appear mostly in 2025 and 2026, and the strain shows up at the entry level more than in headcount: computer-systems-design employment is still above its January 2020 level.</p>
+<p>Markets can also feed themselves. One loop is measurable in part. When layoffs and uncertainty make staying put safer, fewer people quit. Quits create openings, because employers backfill, and openings become hires. In the information sector, quits averaged {F['quits_2019']},000 a month in 2019 and {F['quits_l12']},000 over the last 12 months, and the whole-economy quits rate fell from {F['qrate_2019']}% to {F['qrate_l12']}%.</p></div>"""
+    + kpis(tile("Information-sector quits", f"{F['quits_l12']}k a month", f"12 months to {mo(story['latest_info_month'])} · 2019: {F['quits_2019']}k"),
+           tile("Whole-economy quits rate", f"{F['qrate_l12']}%", f"12 months to {mo(story['latest_info_month'])} · 2019: {F['qrate_2019']}%"),
+           tile("Information-sector hires", f"{F['hires_l12_6']}k a month", f"12 months to {mo(story['latest_info_month'])} · 2019: {F['hires_2019']}k"))
+    + figure("fig-quits")
+    + f"""<div class="prose"><p>The diagram shows that loop and a second one, about the entry-level pipeline. We measured the levels in the solid boxes. The arrows are proposed mechanisms: we did not test whether one step causes the next, and the dashed boxes are steps we have no data for.</p></div>"""
+    + figure("fig-loops").replace('<div id="fig-loops"></div>', loop_diagram())
+    + """<div class="prose"><p>The second loop could break. If the bench of mid-level engineers gets thin enough, the shortage raises hiring pressure again, but the delay could be years. Nothing here says it will happen or when.</p>
+<p class="caveat"><strong>What would settle this.</strong> Ranking these causes needs firm-level data: which employers cut, in what roles, and what they reported about taxes, costs and AI at the time. Layoff notices filed under the WARN Act and company filings are the obvious places to look, and we set both aside for this draft. Until then, treat each cause here as a hypothesis with a stated status.</p></div>""",
+)
+
 page = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tech Hiring Gap</title>
@@ -145,13 +261,13 @@ page = f"""<!doctype html>
 <h1>Boom, bust, and a market that never reopened</h1>
 <p class="dek">Tech hiring surged, stalled, and thinned out. What the numbers show, what they cannot show, and where we are guessing.</p>
 </header>
-<nav class="nav"><a href="#ch1">1 The boom</a><a href="#ch2">2 The turn</a><a href="#ch3">3 The cuts</a><a href="#ch4">4 The gap that narrowed</a><a href="#ch5">5 Who is shut out</a><a href="sources.html">Sources</a></nav>
+<nav class="nav"><a href="#ch1">1 The boom</a><a href="#ch2">2 The turn</a><a href="#ch3">3 The cuts</a><a href="#ch4">4 The gap that narrowed</a><a href="#ch5">5 Who is shut out</a><a href="#ch6">6 Why</a><a href="sources.html">Sources</a></nav>
 {chapter(1, ch1)}
 {chapter(2, ch2)}
 {chapter(3, ch3)}
 {chapter(4, ch4)}
 {chapter(5, ch5)}
-<div class="next prose"><strong>Still to come.</strong> Chapter 6 maps the causes and feedback loops. This draft stops after chapter 5.</div>
+{chapter(6, ch6)}
 <footer>Every figure links to its sources; <a href="sources.html">the sources page</a> lists what each one measures, when it was retrieved, and where it falls short.</footer>
 </div>
 <script src="assets/vendor/d3.min.js"></script>

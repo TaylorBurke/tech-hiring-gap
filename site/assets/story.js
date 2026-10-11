@@ -95,6 +95,16 @@
       ],
     }),
 
+    /* Chapter 6 */
+    "fig-quits": () => Charts.line(document.getElementById("fig-quits"), {
+      label: "Line chart of information-sector quits and hires, thousands per month, 3-month average",
+      series: [
+        { name: "Quits", color: "--s1", data: d("info_quits_3m"), prelim: PRELIM },
+        { name: "Hires", color: "--s2", data: d("info_hires_3m"), prelim: PRELIM },
+      ],
+      xDomain: ["2019-01", "2026-10"], endLabels: true, height: 300, yMin: 0, valueFormat: (v) => Charts.fmtNum(v) + "k", yFormat: k0,
+    }),
+
     /* Chapter 4 */
     "fig-gap-levels": () => Charts.line(document.getElementById("fig-gap-levels"), {
       label: "Line chart of information-sector job openings and hires, thousands per month, 3-month average",

@@ -21,6 +21,10 @@ FIGURES = {
         "sub": "Unemployment rate of recent graduates in each of 74 majors, 2024. One dot per major", "sources": ["nyfed_college"]},
     "fig-broad": {"chapter": 5, "title": "The headline rate leaves out a group that has grown",
         "sub": "Broader unemployment measures and people who want a job but are not looking, 2019 to 2026", "sources": ["fred"]},
+    "fig-quits": {"chapter": 6, "title": "Fewer people are quitting, and fewer are being hired",
+        "sub": "Information sector, thousands per month, 3-month average. Hollow point = preliminary", "sources": ["bls_jolts"]},
+    "fig-loops": {"chapter": 6, "title": "Two loops that could keep a thin market thin",
+        "sub": "Proposed mechanisms. Solid boxes: levels measured here (2019 average to last 12 months). Dashed boxes: not measured here", "sources": ["bls_jolts", "nyfed_college"]},
 }
 
-CHAPTERS = {1: "The boom", 2: "The turn", 3: "The cuts", 4: "The gap that narrowed", 5: "Who is shut out"}
+CHAPTERS = {1: "The boom", 2: "The turn", 3: "The cuts", 4: "The gap that narrowed", 5: "Who is shut out", 6: "Why: causes and loops"}

@@ -202,3 +202,19 @@ story["facts"].update({
 })
 (out / "story.json").write_text(json.dumps(story, indent=1))
 print({k: v for k, v in story["facts"].items() if k.startswith(("recent", "nyall", "u3", "u6", "want", "marg", "disc", "lfpr", "epop", "cs_", "ce_", "major", "under"))})
+
+# ---------------- chapter 6: the quits link in the "staying put" loop ----------------
+quits_all_rate = fred("JTSQUR")
+info_quits = J["QUL"]
+story["series"]["info_quits_3m"] = {"sources": ["bls_jolts"], "unit": "thousands, 3-month average", "monthly": pts(rolling(info_quits), "2019-03")}
+lat = story["latest_info_month"]
+l12 = ym_back(lat, 11)
+story["facts"].update({
+    "quits_2019": round(avg(info_quits, "2019-01", "2019-12")), "quits_l12": round(avg(info_quits, l12, lat)),
+    "qrate_2019": round(avg(quits_all_rate, "2019-01", "2019-12"), 2), "qrate_l12": round(avg(quits_all_rate, l12, lat), 2),
+    "openings_2019": round(avg(info_open, "2019-01", "2019-12")), "openings_l12": round(avg(info_open, l12, lat)),
+    "hires_l12_6": round(avg(info_hire, l12, lat)), "l12_start6": l12,
+    "sw_2023_05": round(sw["2023-05"]), "sw_2025_07": round(sw["2025-07"]),
+})
+(out / "story.json").write_text(json.dumps(story, indent=1))
+print({k: story["facts"][k] for k in ("quits_2019", "quits_l12", "qrate_2019", "qrate_l12", "openings_2019", "openings_l12", "hires_2019", "hires_l12_6", "sw_2023_05")})

@@ -120,3 +120,31 @@ footer { border-top: 1px solid var(--grid); padding: 24px 0 48px; font-size: 14p
   .tile .val { font-size: 28px; }
   figure { padding: 14px 10px 10px; border-radius: 10px; }
 }
+
+/* chapter 6: causes table and loop diagram */
+.table-wrap { overflow-x: auto; margin: 24px 0; border-radius: 12px; box-shadow: 0 0 0 1px var(--ring); background: var(--surface); }
+table.causes { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 14.5px; line-height: 1.45; }
+table.causes th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding: 12px 14px; border-bottom: 1px solid var(--grid); }
+table.causes td { vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--grid); }
+table.causes tr:last-child td { border-bottom: 0; }
+table.causes td:first-child { font-weight: 600; width: 19%; }
+.badge { display: inline-flex; gap: 7px; align-items: center; font-weight: 600; white-space: nowrap; }
+.badge svg { flex: none; align-self: center; }
+.loops svg { display: block; width: 100%; height: auto; color: var(--ink); }
+.loops .node { fill: var(--surface); stroke-width: 1.5; }
+.loops .node.meas { stroke: var(--s1); }
+.loops .node.infer { stroke: var(--ink-2); stroke-dasharray: 5 4; }
+.loops .shock { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+.loops text { fill: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.loops .nt { font-size: 12.5px; font-weight: 600; }
+.loops .ns { font-size: 11px; fill: var(--ink-2); }
+.loops .el { font-size: 11px; fill: var(--ink-2); }
+.loops .lt { font-size: 13.5px; font-weight: 650; }
+.loops .edge { fill: none; stroke: var(--ink-2); stroke-width: 1.5; }
+.loops .rr { fill: var(--surface); stroke: var(--s1); stroke-width: 1.5; }
+.loops .rl { font-size: 12px; font-weight: 700; text-anchor: middle; }
+.loops .leg { font-size: 11.5px; fill: var(--ink-2); }
+@media (max-width: 560px) { .loops svg { min-width: 640px; } .loops .scroll { overflow-x: auto; } }
+
+.hint { display: none; font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+@media (max-width: 560px) { .hint { display: block; } }

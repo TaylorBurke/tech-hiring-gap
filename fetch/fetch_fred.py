@@ -9,6 +9,7 @@ SERIES = {
     "USINFO": "Information-sector employment",
     "JTSJOL": "JOLTS total nonfarm openings",
     "JTSHIL": "JOLTS total nonfarm hires",
+    "JTSQUR": "JOLTS total nonfarm quits rate",
     "JTSLDL": "JOLTS total nonfarm layoffs and discharges",
     "EMRATIO": "Employment-population ratio, 16+",
     "LNS12300060": "Employment-population ratio, prime age 25-54",
