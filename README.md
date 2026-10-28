@@ -51,3 +51,9 @@ Raw downloads are git-ignored; each source has a `manifest.json` (url, sha256, f
 
 ## Hosting
 `.github/workflows/pages.yml` publishes `site/` to GitHub Pages on every push to `main`.
+
+## License
+- **Code** (the Python pipeline and `site/assets/*.js`): MIT, see `LICENSE`.
+- **Text, charts and the data we derived** (`data/derived/`, the published site): [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Reuse them with credit to this project and a link.
+- **Third-party material keeps its own terms.** The Indeed Hiring Lab series is CC BY 4.0, so reuse of it must also credit Indeed Hiring Lab. The quoted sentences in `data/challenger_*.csv` belong to Challenger, Gray & Christmas and are included only to verify each figure. BLS data is public domain; FRED series keep their original publishers' terms. Each source's terms are listed in `sources.toml`.
+- **Vendored libraries** in `site/assets/vendor/` keep their own licenses: D3 (ISC).
